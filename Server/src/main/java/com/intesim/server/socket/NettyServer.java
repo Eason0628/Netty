@@ -1,6 +1,9 @@
-package com.intesim.socket.socket;
+package com.intesim.server.socket;
 
-import com.intesim.socket.NettyStart;
+import com.intesim.server.NettyStart;
+import com.intesim.server.socket.handler.ServerContHandler;
+import com.intesim.server.socket.handler.ServerDecoder;
+import com.intesim.server.socket.handler.ServerEncoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
@@ -36,7 +39,7 @@ public class NettyServer implements Runnable {
     private Integer port;
 
     /**
-     * 开启netty
+     * Start Netty
      */
     @Override
     public void run() {
@@ -64,15 +67,16 @@ public class NettyServer implements Runnable {
     }
 
     /**
-     * 获取child监听
+     * Get child listener
+     *
      */
     private class ChildChannelInitializer extends ChannelInitializer<SocketChannel> {
         @Override
         protected void initChannel(SocketChannel ch) throws Exception {
             ChannelPipeline pipeline = ch.pipeline();
-//                pipeline.addLast(new ServerEncoder());
-//                pipeline.addLast(new ServerDecoder());
-//                pipeline.addLast(new ServerContHandler());
+                pipeline.addLast(new ServerEncoder());
+                pipeline.addLast(new ServerDecoder());
+                pipeline.addLast(new ServerContHandler());
             }
         }
     }

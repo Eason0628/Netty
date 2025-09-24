@@ -1,5 +1,8 @@
-package com.intesim.socket.service;
+package com.intesim.client.service;
 
+import com.intesim.client.handler.HostContHandler;
+import com.intesim.client.handler.HostDecoder;
+import com.intesim.client.handler.HostEncoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
@@ -10,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 开启netty服务
+ * Start Netty
  *
  */
 public class NettyServer implements Runnable {
@@ -45,8 +48,8 @@ public class NettyServer implements Runnable {
         try {
             bootstrap.group(group)
                     .channel(NioSocketChannel.class)
-                    .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)//Netty4使用对象池，重用缓冲区
-                    .option(ChannelOption.SO_KEEPALIVE, true)//保持长连接
+                    .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                    .option(ChannelOption.SO_KEEPALIVE, true)
                     .handler(new ChildChannelInitializer());
             while (true) {
                 try {
@@ -64,10 +67,8 @@ public class NettyServer implements Runnable {
     }
 
     private void connect() throws InterruptedException {
-        // 异步开启客户端连接
         ChannelFuture f = bootstrap.connect(this.host, this.port).sync();
         LOGGER.info("Netty connect " + this.host + ":" + this.port);
-        // 异步等待关闭连接channel
         f.channel().closeFuture().sync();
     }
 
@@ -79,9 +80,9 @@ public class NettyServer implements Runnable {
         @Override
         protected void initChannel(SocketChannel ch) throws Exception {
             ChannelPipeline pipeline = ch.pipeline();
-//            pipeline.addLast(new HostEncoder());
-//            pipeline.addLast(new HostDecoder());
-//            pipeline.addLast(new HostContHandler());
+            pipeline.addLast(new HostEncoder());
+            pipeline.addLast(new HostDecoder());
+            pipeline.addLast(new HostContHandler());
         }
     }
 }

@@ -1,6 +1,6 @@
-package com.intesim.socket;
+package com.intesim.server;
 
-import com.intesim.socket.socket.NettyServer;
+import com.intesim.server.socket.NettyServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

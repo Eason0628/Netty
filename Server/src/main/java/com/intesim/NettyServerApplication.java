@@ -1,6 +1,6 @@
 package com.intesim;
 
-import com.intesim.socket.NettyStart;
+import com.intesim.server.NettyStart;
 import com.intesim.util.SpringUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
