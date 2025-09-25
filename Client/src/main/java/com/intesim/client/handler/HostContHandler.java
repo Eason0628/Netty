@@ -2,10 +2,14 @@ package com.intesim.client.handler;
 
 import com.alibaba.fastjson.JSON;
 import com.intesim.entity.DataMsg;
+import com.intesim.entity.SocketEntity;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class HostContHandler extends ChannelInboundHandlerAdapter {
@@ -24,10 +28,12 @@ public class HostContHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        LOGGER.info("Client connected:{}", ctx.channel().remoteAddress());
+        SocketEntity socketEntity = new SocketEntity();
         DataMsg dataMsg = new DataMsg();
-        dataMsg.setData("Client data from channelActive");
-        ctx.writeAndFlush(dataMsg);
+        String msgs = "Hello Server,This msg from Client!";
+        dataMsg.setData(msgs);
+        socketEntity.setDataMsg(dataMsg);
+        ctx.writeAndFlush(socketEntity);
     }
 
     /**
@@ -38,13 +44,6 @@ public class HostContHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        DataMsg reciveMsg = (DataMsg) msg;
-        String serverMsg = JSON.toJSONString((reciveMsg.getData()));
-        System.out.println(serverMsg);
-
-        DataMsg sendMsg = new DataMsg();
-        sendMsg.setData("Client connected and sending data from channelRead");
-        ctx.writeAndFlush(sendMsg);
     }
 
     /**

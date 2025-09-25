@@ -4,30 +4,38 @@ import com.alibaba.fastjson.JSON;
 import com.intesim.entity.DataMsg;
 import com.intesim.entity.SocketConst;
 import com.intesim.entity.SocketEntity;
+import com.intesim.server.cache.HostCache;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.web.context.ContextLoader;
+
+import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
- * Client 通讯包解码
+ * host通讯包解码
  *
  */
 public class ServerDecoder extends ByteToMessageDecoder {
 
     /**
-     * NettyHandler Logger
+     * NettyHandler 日志输出器
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerDecoder.class);
+
     /**
      * 合包临时存储
      */
     private String tempPacket = "";
+
     /**
      * 多包缓存
      */
@@ -65,7 +73,10 @@ public class ServerDecoder extends ByteToMessageDecoder {
     private void sendData(String packet, ChannelHandlerContext ctx, List<Object> list) {
         DataMsg dataMsg = this.getDataMsg(ctx, packet);
         if (dataMsg != null) {
-            list.add(dataMsg);
+            SocketEntity newEntity = new SocketEntity();
+            newEntity.setDataMsg(dataMsg);
+            newEntity.setContext(ctx);
+            list.add(newEntity);
         }
     }
 
@@ -77,6 +88,7 @@ public class ServerDecoder extends ByteToMessageDecoder {
      * @return 向下一节点发送的数据
      */
     private DataMsg getDataMsg(ChannelHandlerContext ctx, String packet) {
+        HostCache bean = new HostCache();
         try {
             DataMsg dataMsg = JSON.parseObject(packet, DataMsg.class);//直接转json对象 如果失败报错
             if (dataMsg == null) {
@@ -86,8 +98,11 @@ public class ServerDecoder extends ByteToMessageDecoder {
             LOGGER.debug("host dataMsg=========>>\r\n{}\r\nhost========>>{}", packet, ctx.channel().remoteAddress().toString());
             String ip = ctx.channel().remoteAddress().toString().substring(1, ctx.channel().remoteAddress().toString().indexOf(
                     ":"));
+            bean.addHostInfoCache(ip, dataMsg.getData());
             return dataMsg;
         } catch (Exception ex) {
+            bean.removeHostInfoCache(ctx.channel().remoteAddress().toString().substring(1, ctx.channel().remoteAddress().toString().indexOf(
+                    ":")));
             this.getFail(ctx, packet, "Socket Data Error!");
         }
         return null;

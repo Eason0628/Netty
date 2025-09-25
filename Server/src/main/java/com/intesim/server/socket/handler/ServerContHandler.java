@@ -1,7 +1,7 @@
 package com.intesim.server.socket.handler;
 
 import com.alibaba.fastjson.JSON;
-import com.intesim.entity.DataMsg;
+import com.intesim.entity.SocketEntity;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +27,9 @@ public class ServerContHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        DataMsg dataMsg = (DataMsg) msg;
-        String clientMsg = JSON.toJSONString((dataMsg.getData()));
-        System.out.println(clientMsg);
+        SocketEntity dataMsg = (SocketEntity) msg;
+        String data = JSON.toJSONString((dataMsg.getDataMsg().getData()));
+        System.out.println(data);
     }
 
     /**

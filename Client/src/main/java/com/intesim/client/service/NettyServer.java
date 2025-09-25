@@ -1,7 +1,6 @@
 package com.intesim.client.service;
 
 import com.intesim.client.handler.HostContHandler;
-import com.intesim.client.handler.HostDecoder;
 import com.intesim.client.handler.HostEncoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;

@@ -1,6 +1,7 @@
 package com.intesim.client.handler;
 
 import com.alibaba.fastjson.JSON;
+import com.intesim.client.entity.HostSocketEntity;
 import com.intesim.entity.DataMsg;
 import com.intesim.entity.SocketConst;
 import io.netty.buffer.ByteBuf;
@@ -64,7 +65,10 @@ public class HostDecoder extends ByteToMessageDecoder {
     private void sendData(String packet, ChannelHandlerContext channelHandlerContext, List<Object> list) {
         DataMsg dataMsg = this.getDataMsg(channelHandlerContext, packet);
         if (dataMsg != null) {
-            list.add(dataMsg);
+            HostSocketEntity newEntity = new HostSocketEntity();
+            newEntity.setDataMsg(dataMsg);
+            newEntity.setContext(channelHandlerContext);
+            list.add(newEntity);
         }
     }
 
@@ -121,5 +125,7 @@ public class HostDecoder extends ByteToMessageDecoder {
         LOGGER.error("Message:" + message +
                 "\n|----------------------------------------------|pocket errot:data||" + json +
                 "\n|----------------------------------------------|host||" + ctx.channel().remoteAddress());
+//        ctx.close();//todo 下位机需要响应包错误请求
+        //todo 后期需要改成返回错误信息,超过次数再关闭
     }
 }

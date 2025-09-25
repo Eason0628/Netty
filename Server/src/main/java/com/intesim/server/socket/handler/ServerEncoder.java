@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 
 /**
- * netty编码器
+ * Netty 编码器
  */
 public class ServerEncoder extends MessageToByteEncoder<DataMsg> {
 
